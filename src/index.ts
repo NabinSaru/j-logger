@@ -5,11 +5,59 @@ import {
   brightColors,
 } from "./consts/console-colors.const";
 import { execSync } from "child_process";
-import { writeFileSync, statSync, existsSync, mkdirSync } from "fs";
+import {
+  writeFileSync,
+  statSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+} from "fs";
 import * as path from "path";
 import { LogType } from "./enums/logType.enum";
 import { logTypes } from "./helpers/middleware-log-types.helper";
 import { LogTypes, CallbackFunction } from "./interfaces/interfaces";
+
+// function createCounter() {
+//   let count = 0;
+
+//   return function () {
+//     count++;
+//     console.log(count);
+//   };
+// }
+
+(function () {
+  if (existsSync("/j-logger.config")) {
+    const fileContent = readFileSync("/j-logger.config", "utf8");
+
+    try {
+      const configData = JSON.parse(fileContent);
+
+      const {
+        color,
+        backgroundColor,
+        saveLog,
+        logPath,
+        textFormat,
+        stylizedMode,
+      } = configData;
+
+      if (color) JLogger.TextColor = color;
+      if (backgroundColor) JLogger.BackgroundColor = backgroundColor;
+      if (saveLog) JLogger.SaveLog = true;
+      if (logPath) {
+        JLogger.SavePath = logPath;
+      } else {
+        JLogger.SavePath = "/log/j-logger.log";
+      }
+      if (textFormat && textFormat.isArray()) JLogger.TextFormat = textFormat;
+      if (stylizedMode) JLogger.StylizedMode = true;
+    } catch (error) {
+      console.error("Error parsing JSON:", error);
+    }
+  } else {
+  }
+});
 
 function createFileIfNotExists(filePath: string) {
   try {
@@ -31,25 +79,14 @@ function createFileIfNotExists(filePath: string) {
 }
 
 export class JLogger {
-  static color: string  = "Black";
-  static backgroundColor: string = "White";
-  static saveLog: boolean = false;
-  static logPath: string  = "";
-  static textFormat: string[];
+  private static color: string = "Black";
+  private static backgroundColor: string = "White";
+  private static saveLog: boolean = false;
+  private static logPath: string = "";
+  private static textFormat: string[];
+  private static stylizedMode: boolean = false;
 
-  constructor(
-    color: string,
-    backgroundColor: string,
-    saveLog: boolean,
-    logPath: string
-  ) {
-    JLogger.color = textColors[color];
-    JLogger.backgroundColor = backgroundColors[backgroundColor];
-    JLogger.saveLog = saveLog;
-    JLogger.logPath = logPath;
-  }
-
-  static SetLogPath(path: string) {
+  static set SavePath(path: string) {
     if (!existsSync(path)) {
       mkdirSync(path);
     }
@@ -68,6 +105,14 @@ export class JLogger {
 
   static set SaveLog(flag: boolean) {
     JLogger.saveLog = flag;
+  }
+
+  static set TextFormat(format: string[]) {
+    JLogger.textFormat = format;
+  }
+
+  static set StylizedMode(flag: boolean) {
+    JLogger.stylizedMode = flag;
   }
 
   private static formattedLog(message: string, level: string) {
@@ -115,10 +160,13 @@ export class JLogger {
   }
 
   static warn(msg: string) {
+    // if (this.stylizedMode) {
+    //   `${backgroundColors.Yellow}${textColors.White}`
+    // }
     console.log(
-      `${textColors.Red}${JLogger.formattedLog(msg, "WARN")}${
-        formattingOptions.Reset
-      }`
+      `${
+        JLogger.stylizedMode ? backgroundColors.Yellow : textColors.Yellow
+      }${JLogger.formattedLog(msg, "WARN")}${formattingOptions.Reset}`
     );
   }
 
