@@ -6,17 +6,12 @@ import {
   KVinterface,
 } from "./consts/console-colors.const";
 import { execSync } from "child_process";
-import {
-  writeFileSync,
-  statSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-} from "fs";
+import { existsSync, mkdirSync, readFileSync } from "fs";
 import * as path from "path";
 import { LogType } from "./enums/logType.enum";
 import { logTypes } from "./helpers/middleware-log-types.helper";
 import { LogTypes, CallbackFunction } from "./interfaces/interfaces";
+import { rootPath, writeLog } from "./helpers/file-system.helper";
 
 // function createCounter() {
 //   let count = 0;
@@ -32,10 +27,15 @@ const DEFAULT: KVinterface = {
   configLogPath: "/log/j-logger.log",
 };
 
+/**
+ * initializes the JLogger Class with the config file
+ */
 (function () {
-  if (existsSync(DEFAULT.configFilePath)) {
+  const fullConfigPath = path.join(rootPath, DEFAULT.configFilePath);
+
+  if (existsSync(fullConfigPath)) {
     try {
-      const fileContent = readFileSync(DEFAULT.configFilePath, "utf8");
+      const fileContent = readFileSync(fullConfigPath, "utf8");
       const configData = JSON.parse(fileContent);
 
       const {
@@ -58,30 +58,28 @@ const DEFAULT: KVinterface = {
         JLogger.SaveLog = true;
         JLogger.SavePath = logPath || DEFAULT.configLogPath;
       }
+      JLogger.cleanLog("[INFO] Log style set from config file");
     } catch (error) {
-      console.error("Error parsing JSON:", error);
+      JLogger.cleanLog(`[ERROR] Error parsing JSON: ${error}`);
     }
   } else {
-    // Handle case when the configuration file doesn't exist
+    JLogger.cleanLog("[INFO] Setting default log style");
   }
 })();
 
 export class JLogger {
-  private static color: string = "Black";
-  private static backgroundColor: string = "White";
-  private static saveLog: boolean = false;
-  private static logPath: string = "";
-  private static textFormat: string[] = [];
-  private static stylizedMode: boolean = false;
+  static color: string = "Black";
+  static backgroundColor: string = "White";
+  static saveLog: boolean = false;
+  static logPath: string = "";
+  static textFormat: string[] = [];
+  static stylizedMode: boolean = false;
 
+  // Setters
   static set SavePath(path: string) {
-    if (!existsSync(path)) {
-      mkdirSync(path);
-    }
+    JLogger.logPath = path;
     JLogger.saveLog = true;
   }
-
-  static set LogStyle(path: string) {}
 
   static set TextColor(color: string) {
     JLogger.color = textColors[color];
@@ -103,13 +101,7 @@ export class JLogger {
     JLogger.stylizedMode = flag;
   }
 
-  private static formattedLog(message: string, level: string) {
-    const timestamp = new Date().toISOString();
-
-    const formattedMessage = `[${timestamp}] [${level.toUpperCase()}]: ${message}`;
-    return formattedMessage;
-  }
-
+  // Getters
   static get TextColors() {
     return Object.keys(textColors);
   }
@@ -126,34 +118,53 @@ export class JLogger {
     return Object.keys(brightColors);
   }
 
+  // Methods
+  private static formattedLog(message: string, level: string) {
+    const timestamp = new Date().toISOString();
+
+    const formattedMessage = `[${timestamp}] [${level.toUpperCase()}]: ${message}`;
+    return formattedMessage;
+  }
+
   // TODO: take default style
   static log(msg: string) {
     if (JLogger.saveLog) {
-      // logic to writesync
+      writeLog(JLogger.logPath, msg);
     }
-    console.log(`${textColors.Green}${msg}${formattingOptions.Reset}`);
+
+    console.log(
+      `${JLogger.backgroundColor}${JLogger.color}${msg}${formattingOptions.Reset}`
+    );
   }
 
   static info(msg: string) {
+    const formattedMessage = JLogger.formattedLog(msg, "INFO");
+    if (JLogger.saveLog) {
+      writeLog(JLogger.logPath, formattedMessage);
+    }
+
     console.log(
-      `${textColors.Green}${JLogger.formattedLog(msg, "INFO")}${
-        formattingOptions.Reset
-      }`
+      `${textColors.Green}${formattedMessage}${formattingOptions.Reset}`
     );
   }
 
   static error(msg: string) {
+    const formattedMessage = JLogger.formattedLog(msg, "ERROR");
+    if (JLogger.saveLog) {
+      writeLog(JLogger.logPath, formattedMessage);
+    }
+
     console.log(
-      `${textColors.Red}${JLogger.formattedLog(msg, "ERROR")}${
-        formattingOptions.Reset
-      }`
+      `${textColors.Red}${formattedMessage}${formattingOptions.Reset}`
     );
   }
 
   static warn(msg: string) {
-    // if (this.stylizedMode) {
-    //   `${backgroundColors.Yellow}${textColors.White}`
-    // }
+    const formattedMessage = JLogger.formattedLog(msg, "WARN");
+    if (JLogger.saveLog) {
+      writeLog(JLogger.logPath, formattedMessage);
+    }
+
     console.log(
       `${
         JLogger.stylizedMode ? backgroundColors.Yellow : textColors.Yellow
@@ -162,14 +173,17 @@ export class JLogger {
   }
 
   static debug(msg: string) {
+    const formattedMessage = JLogger.formattedLog(msg, "ERROR");
+    if (JLogger.saveLog) {
+      writeLog(JLogger.logPath, formattedMessage);
+    }
+
     console.log(
-      `${textColors.Red}${JLogger.formattedLog(msg, "DEBUG")}${
-        formattingOptions.Reset
-      }`
+      `${textColors.Red}${formattedMessage}${formattingOptions.Reset}`
     );
   }
 
-  static defaultLog(msg: string) {
+  static cleanLog(msg: string) {
     console.log(msg);
   }
 
@@ -233,10 +247,10 @@ export const requestLogger =
   <T extends keyof LogTypes>(logType: T) =>
   (req: any, res: any, next: CallbackFunction) => {
     const logEntry = logTypes[logType](req, res);
-    if (JLogger.StylizedMode) {
+    if (JLogger.stylizedMode) {
       const { protocol } = req;
       const stylizedLog = `${backgroundColors.Blue}${textColors.White}${protocol}${formattingOptions.Reset}${brightColors.Blue}${logEntry}${formattingOptions.Reset}`;
-      JLogger.defaultLog(stylizedLog);
+      JLogger.cleanLog(stylizedLog);
     } else {
       JLogger.log(logEntry);
     }
