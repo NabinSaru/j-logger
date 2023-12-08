@@ -3,6 +3,7 @@ import {
   backgroundColors,
   formattingOptions,
   brightColors,
+  KVinterface,
 } from "./consts/console-colors.const";
 import { execSync } from "child_process";
 import {
@@ -26,11 +27,15 @@ import { LogTypes, CallbackFunction } from "./interfaces/interfaces";
 //   };
 // }
 
-(function () {
-  if (existsSync("/j-logger.config")) {
-    const fileContent = readFileSync("/j-logger.config", "utf8");
+const DEFAULT: KVinterface = {
+  configFilePath: "/j-logger.config",
+  configLogPath: "/log/j-logger.log",
+};
 
+(function () {
+  if (existsSync(DEFAULT.configFilePath)) {
     try {
+      const fileContent = readFileSync(DEFAULT.configFilePath, "utf8");
       const configData = JSON.parse(fileContent);
 
       const {
@@ -44,46 +49,29 @@ import { LogTypes, CallbackFunction } from "./interfaces/interfaces";
 
       if (color) JLogger.TextColor = color;
       if (backgroundColor) JLogger.BackgroundColor = backgroundColor;
-      if (saveLog) JLogger.SaveLog = true;
-      if (logPath) {
-        JLogger.SavePath = logPath;
-      } else {
-        JLogger.SavePath = "/log/j-logger.log";
-      }
-      if (textFormat && textFormat.isArray()) JLogger.TextFormat = textFormat;
+
+      // check deep clone or array overwrite
+      if (Array.isArray(textFormat) && textFormat.length)
+        JLogger.TextFormat = textFormat;
       if (stylizedMode) JLogger.StylizedMode = true;
+      if (saveLog) {
+        JLogger.SaveLog = true;
+        JLogger.SavePath = logPath || DEFAULT.configLogPath;
+      }
     } catch (error) {
       console.error("Error parsing JSON:", error);
     }
   } else {
+    // Handle case when the configuration file doesn't exist
   }
-});
-
-function createFileIfNotExists(filePath: string) {
-  try {
-    const stats = statSync(filePath);
-
-    if (stats.isFile()) {
-      console.log(`${filePath} is a file.`);
-    } else if (stats.isDirectory()) {
-      console.log(`${filePath} is a directory.`);
-      // If it's a directory, create a file in it
-      const newFilePath = path.join(filePath, "newFile.txt");
-      writeFileSync(newFilePath, "Hello, this is a new file!");
-      JLogger.info("Created a new log file.");
-    }
-  } catch (error: any) {
-    // Handle the error (e.g., path does not exist)
-    JLogger.error(`Error: ${error.message}`);
-  }
-}
+})();
 
 export class JLogger {
   private static color: string = "Black";
   private static backgroundColor: string = "White";
   private static saveLog: boolean = false;
   private static logPath: string = "";
-  private static textFormat: string[];
+  private static textFormat: string[] = [];
   private static stylizedMode: boolean = false;
 
   static set SavePath(path: string) {
@@ -140,6 +128,9 @@ export class JLogger {
 
   // TODO: take default style
   static log(msg: string) {
+    if (JLogger.saveLog) {
+      // logic to writesync
+    }
     console.log(`${textColors.Green}${msg}${formattingOptions.Reset}`);
   }
 
@@ -176,6 +167,10 @@ export class JLogger {
         formattingOptions.Reset
       }`
     );
+  }
+
+  static defaultLog(msg: string) {
+    console.log(msg);
   }
 
   static debugBox(msg: string) {
@@ -234,22 +229,16 @@ export class JLogger {
   }
 }
 
-// export class InterceptorLogger extends JLogger {
-//   constructor(logType: string) {
-//     super();
-
-//     requestLogger(logType);
-//   }
-
-//   static getLogTypes() {
-//     return Object.values(LogType);
-//   }
-// }
-
 export const requestLogger =
   <T extends keyof LogTypes>(logType: T) =>
   (req: any, res: any, next: CallbackFunction) => {
     const logEntry = logTypes[logType](req, res);
-    JLogger.log(logEntry);
+    if (JLogger.StylizedMode) {
+      const { protocol } = req;
+      const stylizedLog = `${backgroundColors.Blue}${textColors.White}${protocol}${formattingOptions.Reset}${brightColors.Blue}${logEntry}${formattingOptions.Reset}`;
+      JLogger.defaultLog(stylizedLog);
+    } else {
+      JLogger.log(logEntry);
+    }
     next();
   };
