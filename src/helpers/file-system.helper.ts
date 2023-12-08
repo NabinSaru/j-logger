@@ -17,7 +17,7 @@ function findProjectRoot(currentDir: string, marker = "package.json"): string {
   throw new Error(`Marker "${marker}" not found in the directory tree.`);
 }
 
-const rootPath = findProjectRoot(__dirname);
+export const rootPath = findProjectRoot(__dirname);
 
 function createFile(filePath: string) {
   // Normalize the path to handle both Unix-like and Windows separators
@@ -55,5 +55,3 @@ export function writeLog(filePath: string, msg: string): boolean {
     return false;
   }
 }
-
-export const RootPath = rootPath;
