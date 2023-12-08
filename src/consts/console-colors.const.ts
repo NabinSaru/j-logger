@@ -1,4 +1,4 @@
-interface KVinterface {
+export interface KVinterface {
   [key: string]: string;
 }
 
