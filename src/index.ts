@@ -14,7 +14,7 @@ import { LogTypes, CallbackFunction } from "./interfaces/interfaces";
 import { rootPath, writeLog } from "./helpers/file-system.helper";
 
 const DEFAULT: KVinterface = {
-  configFilePath: "/j-logger.config",
+  configFilePath: "/j-logger.config.json",
   configLogPath: "/log/j-logger.log",
 };
 
