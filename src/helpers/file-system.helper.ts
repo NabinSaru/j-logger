@@ -27,10 +27,10 @@ function createFile(filePath: string) {
   const fileName = pathParts.pop() || "j-logger.log";
 
   // Create the directory structure
-  const fileDir = path.resolve("", ...pathParts);
+  const fileDir = path.join("/", ...pathParts);
 
   if (!existsSync(fileDir)) {
-    mkdirSync(fileDir);
+    mkdirSync(fileDir, { recursive: true });
   }
 
   const filePathWithFile = path.join(fileDir, fileName);
