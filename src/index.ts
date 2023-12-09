@@ -13,59 +13,10 @@ import { logTypes } from "./helpers/middleware-log-types.helper";
 import { LogTypes, CallbackFunction } from "./interfaces/interfaces";
 import { rootPath, writeLog } from "./helpers/file-system.helper";
 
-// function createCounter() {
-//   let count = 0;
-
-//   return function () {
-//     count++;
-//     console.log(count);
-//   };
-// }
-
 const DEFAULT: KVinterface = {
   configFilePath: "/j-logger.config",
   configLogPath: "/log/j-logger.log",
 };
-
-/**
- * initializes the JLogger Class with the config file
- */
-(function () {
-  const fullConfigPath = path.join(rootPath, DEFAULT.configFilePath);
-
-  if (existsSync(fullConfigPath)) {
-    try {
-      const fileContent = readFileSync(fullConfigPath, "utf8");
-      const configData = JSON.parse(fileContent);
-
-      const {
-        color,
-        backgroundColor,
-        saveLog,
-        logPath,
-        textFormat,
-        stylizedMode,
-      } = configData;
-
-      if (color) JLogger.TextColor = color;
-      if (backgroundColor) JLogger.BackgroundColor = backgroundColor;
-
-      // check deep clone or array overwrite
-      if (Array.isArray(textFormat) && textFormat.length)
-        JLogger.TextFormat = textFormat;
-      if (stylizedMode) JLogger.StylizedMode = true;
-      if (saveLog) {
-        JLogger.SaveLog = true;
-        JLogger.SavePath = logPath || DEFAULT.configLogPath;
-      }
-      JLogger.cleanLog("[INFO] Log style set from config file");
-    } catch (error) {
-      JLogger.cleanLog(`[ERROR] Error parsing JSON: ${error}`);
-    }
-  } else {
-    JLogger.cleanLog("[INFO] Setting default log style");
-  }
-})();
 
 export class JLogger {
   static color: string = "Black";
@@ -173,13 +124,8 @@ export class JLogger {
   }
 
   static debug(msg: string) {
-    const formattedMessage = JLogger.formattedLog(msg, "ERROR");
-    if (JLogger.saveLog) {
-      writeLog(JLogger.logPath, formattedMessage);
-    }
-
     console.log(
-      `${textColors.Red}${formattedMessage}${formattingOptions.Reset}`
+      `${backgroundColors.Red}${textColors.White}[DEBUG]:${formattingOptions.Reset}${textColors.Red} ${msg}${formattingOptions.Reset}`
     );
   }
 
@@ -256,3 +202,43 @@ export const requestLogger =
     }
     next();
   };
+
+/**
+ * initializes the JLogger Class with the config file
+ */
+(function () {
+  const fullConfigPath = path.join(rootPath, DEFAULT.configFilePath);
+
+  if (existsSync(fullConfigPath)) {
+    try {
+      const fileContent = readFileSync(fullConfigPath, "utf8");
+      const configData = JSON.parse(fileContent);
+
+      const {
+        color,
+        backgroundColor,
+        saveLog,
+        logPath,
+        textFormat,
+        stylizedMode,
+      } = configData;
+
+      if (color) JLogger.TextColor = color;
+      if (backgroundColor) JLogger.BackgroundColor = backgroundColor;
+
+      // check deep clone or array overwrite
+      if (Array.isArray(textFormat) && textFormat.length)
+        JLogger.TextFormat = textFormat;
+      if (stylizedMode) JLogger.StylizedMode = true;
+      if (saveLog) {
+        JLogger.SaveLog = true;
+        JLogger.SavePath = logPath || DEFAULT.configLogPath;
+      }
+      JLogger.cleanLog("[INFO] Log style set from config file");
+    } catch (error) {
+      JLogger.cleanLog(`[ERROR] Error parsing JSON: ${error}`);
+    }
+  } else {
+    JLogger.cleanLog("[INFO] Setting default log style");
+  }
+})();
