@@ -9,6 +9,7 @@ import { execSync } from "child_process";
 import { existsSync, mkdirSync, readFileSync } from "fs";
 import * as path from "path";
 import { LogType } from "./enums/logType.enum";
+import { LogLevel } from "./enums/logLevel.enum";
 import { logTypes } from "./helpers/middleware-log-types.helper";
 import { LogTypes, CallbackFunction } from "./interfaces/interfaces";
 import { rootPath, writeLog } from "./helpers/file-system.helper";
@@ -16,6 +17,10 @@ import { rootPath, writeLog } from "./helpers/file-system.helper";
 const DEFAULT: KVinterface = {
   configFilePath: "/j-logger.config.json",
   configLogPath: "/log/j-logger.log",
+};
+
+const currentTime = () => {
+  return new Date().toISOString();
 };
 
 export class JLogger {
@@ -89,44 +94,84 @@ export class JLogger {
   }
 
   static info(msg: string) {
-    const formattedMessage = JLogger.formattedLog(msg, "INFO");
+    const formattedMessage = JLogger.formattedLog(msg, LogLevel.INFO);
     if (JLogger.saveLog) {
       writeLog(JLogger.logPath, formattedMessage);
     }
 
-    console.log(
-      `${textColors.Green}${formattedMessage}${formattingOptions.Reset}`
-    );
+    if (JLogger.stylizedMode) {
+      console.log(
+        `${backgroundColors.Green}${brightColors.Black}[${LogLevel.INFO}]${
+          formattingOptions.Reset
+        }${brightColors.Green} [${currentTime()}] ${msg}${
+          formattingOptions.Reset
+        }`
+      );
+    } else {
+      console.log(
+        `${textColors.Green}${formattedMessage}${formattingOptions.Reset}`
+      );
+    }
   }
 
   static error(msg: string) {
-    const formattedMessage = JLogger.formattedLog(msg, "ERROR");
+    const formattedMessage = JLogger.formattedLog(msg, LogLevel.ERROR);
     if (JLogger.saveLog) {
       writeLog(JLogger.logPath, formattedMessage);
     }
 
-    console.log(
-      `${textColors.Red}${formattedMessage}${formattingOptions.Reset}`
-    );
+    if (JLogger.stylizedMode) {
+      console.log(
+        `${backgroundColors.Red}${brightColors.White}[${LogLevel.ERROR}]${
+          formattingOptions.Reset
+        }${brightColors.Red} [${currentTime()}] ${msg}${
+          formattingOptions.Reset
+        }`
+      );
+    } else {
+      console.log(
+        `${textColors.Red}${formattedMessage}${formattingOptions.Reset}`
+      );
+    }
   }
 
   static warn(msg: string) {
-    const formattedMessage = JLogger.formattedLog(msg, "WARN");
+    const formattedMessage = JLogger.formattedLog(msg, LogLevel.WARN);
     if (JLogger.saveLog) {
       writeLog(JLogger.logPath, formattedMessage);
     }
 
-    console.log(
-      `${
-        JLogger.stylizedMode ? backgroundColors.Yellow : textColors.Yellow
-      }${JLogger.formattedLog(msg, "WARN")}${formattingOptions.Reset}`
-    );
+    if (JLogger.stylizedMode) {
+      console.log(
+        `${backgroundColors.Yellow}${brightColors.Black}[${LogLevel.WARN}]${
+          formattingOptions.Reset
+        }${brightColors.Yellow} [${currentTime()}] ${msg}${
+          formattingOptions.Reset
+        }`
+      );
+    } else {
+      console.log(
+        `${textColors.Yellow}${formattedMessage}${formattingOptions.Reset}`
+      );
+    }
   }
 
   static debug(msg: string) {
-    console.log(
-      `${backgroundColors.Red}${textColors.White}[DEBUG]:${formattingOptions.Reset}${textColors.Red} ${msg}${formattingOptions.Reset}`
-    );
+    if (JLogger.stylizedMode) {
+      console.log(
+        `${backgroundColors.Magenta}${textColors.White}[${LogLevel.DEBUG}]${
+          formattingOptions.Reset
+        }${textColors.Magenta} [${currentTime()}] ${msg}${
+          formattingOptions.Reset
+        }`
+      );
+    } else {
+      const formattedMessage = JLogger.formattedLog(msg, LogLevel.DEBUG);
+
+      console.log(
+        `${textColors.Magenta}${formattedMessage}${formattingOptions.Reset}`
+      );
+    }
   }
 
   static cleanLog(msg: string) {
