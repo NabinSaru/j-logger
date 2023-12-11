@@ -6,6 +6,9 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "start:dev": "node lib",
+    "test": "npm run test:build && node tests/index.js",
+    "test:build": "npm run prepare && npm link && cd tests && npm link j-logger && cd ..",
     "prepare": "npm run build"
   },
   "keywords": [
