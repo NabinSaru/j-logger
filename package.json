@@ -2,9 +2,11 @@
   "name": "j-logger",
   "version": "1.0.0",
   "description": "Library to customize the console logs.",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "prepare": "npm run build"
   },
   "keywords": [
     "logger",
@@ -17,5 +19,6 @@
   "devDependencies": {
     "@types/node": "^20.10.0",
     "typescript": "^5.3.2"
-  }
+  },
+  "files": ["lib/**/*"]
 }
