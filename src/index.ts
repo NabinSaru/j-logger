@@ -24,8 +24,8 @@ const currentTime = () => {
 };
 
 export class JLogger {
-  static color: string = "Black";
-  static backgroundColor: string = "White";
+  static color: string = "";
+  static backgroundColor: string = "";
   static saveLog: boolean = false;
   static logPath: string = "";
   static textFormat: string[] = [];
@@ -237,14 +237,22 @@ export class JLogger {
 export const requestLogger =
   <T extends keyof LogTypes>(logType: T) =>
   (req: any, res: any, next: CallbackFunction) => {
-    const logEntry = logTypes[logType](req, res);
-    if (JLogger.stylizedMode) {
-      const { protocol } = req;
-      const stylizedLog = `${backgroundColors.Blue}${textColors.White}${protocol}${formattingOptions.Reset}${brightColors.Blue}${logEntry}${formattingOptions.Reset}`;
-      JLogger.cleanLog(stylizedLog);
-    } else {
-      JLogger.log(logEntry);
-    }
+    const start = Date.now();
+    res.on("finish", () => {
+      res.locals.responseTime = Date.now() - start;
+      const logEntry = logTypes[logType](req, res);
+      if (JLogger.stylizedMode) {
+        const { protocol } = req;
+        const stylizedLog = `${backgroundColors.Blue}${
+          textColors.White
+        }${protocol.toUpperCase()}${formattingOptions.Reset}${
+          brightColors.Blue
+        } ${logEntry}${formattingOptions.Reset}`;
+        JLogger.cleanLog(stylizedLog);
+      } else {
+        JLogger.log(logEntry);
+      }
+    });
     next();
   };
 
