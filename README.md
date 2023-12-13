@@ -1,7 +1,11 @@
 # Custom Logger
-A custom logger utility for Node.js with configurable styles and features.
+A custom logger utility for Node.js with configurable styles and features. Allows the log saving to the folder path.
 
 ### Installation
+```bash
+npm i @nabinsaru/j-logger
+
+### Installation Development
 ```bash
 # Clone the repository
 git clone git@github.com:NabinSaru/j-logger.git
@@ -42,7 +46,10 @@ The logger can be configured using a JSON file(Optional). Fields are also option
 ### Usage
 ```javascript
 // Import the JLogger class and other required modules
-import { JLogger, requestLogger } from "j-logger";
+import { JLogger, requestLogger } from "@nabinsaru/j-logger";
+// or
+const { JLogger, requestLogger } = require("@nabinsaru/j-logger");
+
 
 // Set custom log styles
 JLogger.TextColor = "White";
@@ -70,7 +77,7 @@ The requestLogger middleware can be used to log HTTP request details.
 
 ```javascript
 const express = require("express");
-const { requestLogger } = require("j-logger");
+const { requestLogger } = require("@nabinsaru/j-logger");
 
 const app = express();
 
