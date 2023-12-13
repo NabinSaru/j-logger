@@ -1,4 +1,4 @@
-import { writeFileSync, existsSync, mkdirSync } from "fs";
+import { writeFileSync, existsSync, mkdirSync, statSync } from "fs";
 import * as path from "path";
 
 function findProjectRoot(currentDir: string, marker = "package.json"): string {
@@ -19,12 +19,18 @@ function findProjectRoot(currentDir: string, marker = "package.json"): string {
 
 export const rootPath = findProjectRoot(__dirname);
 
-function createFile(filePath: string) {
+function createFile(filePath: string, isDir: boolean = false) {
   // Normalize the path to handle both Unix-like and Windows separators
   const normalizedPath = path.normalize(filePath);
 
   const pathParts = normalizedPath.split(path.sep);
-  const fileName = pathParts.pop() || "j-logger.log";
+  let fileName = "";
+
+  if (isDir) {
+    fileName = "j-logger.log";
+  } else {
+    fileName = pathParts.pop() || "j-logger.log";
+  }
 
   // Create the directory structure
   const fileDir = path.join("/", ...pathParts);
@@ -41,10 +47,17 @@ function createFile(filePath: string) {
 
 export function writeLog(filePath: string, msg: string): boolean {
   try {
-    const fullFilePath = path.join(rootPath, filePath);
+    let fullFilePath = path.join(rootPath, filePath);
 
     if (!existsSync(fullFilePath)) {
       createFile(fullFilePath);
+    } else {
+      const stats = statSync(fullFilePath);
+
+      if (stats.isDirectory()) {
+        createFile(fullFilePath, true);
+        fullFilePath = path.join(fullFilePath, "j-logger.log");
+      }
     }
 
     writeFileSync(fullFilePath, `${msg}\n`, { flag: "a" });
