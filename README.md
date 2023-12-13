@@ -121,7 +121,7 @@ with config file *j-logger.config.json*
 }
 ```
 
-![Generic Log](https://raw.githubusercontent.com/NabinSaru/j-logger/demo/images/generic_log.png)
+![Generic Log](https://github.com/NabinSaru/j-logger/blob/demo/images/generic_log.png)
 
 **Stylized Log**
 ```javascript
@@ -130,8 +130,9 @@ JLogger.warn("This is a warning.");
 JLogger.info("This is an info.");
 JLogger.debug("This is a debug statement.");
 ```
-![Stylized Log](https://raw.githubusercontent.com/NabinSaru/j-logger/demo/images/stylized_log.png)
-![Stylized middleware Log](https://raw.githubusercontent.com/NabinSaru/j-logger/demo/images/stylized_middleware_log.png)
+![Stylized Log](https://github.com/NabinSaru/j-logger/blob/demo/images/stylized_log.png)
+
+![Stylized middleware Log](https://github.com/NabinSaru/j-logger/blob/demo/images/stylized_middleware_log.png)
 
 ### License
 This custom logger is open-source and available under the [MIT License](https://opensource.org/license/mit/). Feel free to use, modify, and share!
