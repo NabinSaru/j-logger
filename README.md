@@ -61,7 +61,8 @@ const { requestLogger } = require("j-logger");
 const app = express();
 
 // Use requestLogger middleware for logging requests
-app.use(requestLogger("REQUEST"));
+// Provide log format type
+app.use(requestLogger("common"));
 
 // Your routes and other middleware...
 
@@ -71,6 +72,66 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 ```
+
+Request logger supports 4 distinct log types.
+- common
+```sh
+::1 - - [Wed, 13 Dec 2023 05:34:25 GMT] "GET / HTTP/1.1" 200 15 "-" "PostmanRuntime/7.29.4"
+```
+
+- dev
+```sh
+GET / 200 5 ms - 15
+```
+
+- combined
+```sh
+::1 - - [Wed, 13 Dec 2023 05:41:02 GMT] "GET / HTTP/1.1" 200 15 "-" "PostmanRuntime/7.29.4"
+```
+
+- short
+```sh
+GET / 200 15 - 5 ms
+```
+
+### Demo
+**Generic Log**
+```javascript
+JLogger.log("This is custom log initialized with config file.");
+JLogger.error("This is an error.");
+JLogger.warn("This is a warning.");
+JLogger.info("This is an info.");
+JLogger.cleanLog("This is a clean Log.");
+JLogger.debug("This is a debug statement.");
+JLogger.debugBox("This is a debug box.");
+
+JLogger.TextColor = 'Red';
+JLogger.BackgroundColor = 'White';
+JLogger.StylizedMode = true;
+JLogger.saveLog = true;
+JLogger.log("This is updated custom log.");
+```
+
+with config file *j-logger.config.json*
+```json
+{
+  "color": "Red",
+  "backgroundColor": "Blue",
+  "textFormat": ["Italic", "Bold"]
+}
+```
+
+![Generic Log](https://raw.githubusercontent.com/NabinSaru/j-logger/demo/images/generic_log.png)
+
+**Stylized Log**
+```javascript
+JLogger.error("This is an error.");
+JLogger.warn("This is a warning.");
+JLogger.info("This is an info.");
+JLogger.debug("This is a debug statement.");
+```
+![Stylized Log](https://raw.githubusercontent.com/NabinSaru/j-logger/demo/images/stylized_log.png)
+![Stylized middleware Log](https://raw.githubusercontent.com/NabinSaru/j-logger/demo/images/stylized_middleware_log.png)
 
 ### License
 This custom logger is open-source and available under the [MIT License](https://opensource.org/license/mit/). Feel free to use, modify, and share!
