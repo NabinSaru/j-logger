@@ -4,6 +4,7 @@ A custom logger utility for Node.js with configurable styles and features. Allow
 ### Installation
 ```bash
 npm i @nabinsaru/j-logger
+```
 
 ### Installation Development
 ```bash
