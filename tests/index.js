@@ -1,1 +1,1 @@
-const { requestLogger, JLogger } = require('j-logger');
+const { requestLogger, JLogger } = require('@nabinsaru/j-logger');
