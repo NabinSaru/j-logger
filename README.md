@@ -11,6 +11,34 @@ cd J-LOGGER
 npm install
 ```
 
+### Configuration
+The logger can be configured using a JSON file(Optional). Fields are also optionals. Create a j-logger.config.json file with the following structure:
+
+```json
+{
+  "color": "White",
+  "backgroundColor": "Black",
+  "saveLog": true,
+  "logPath": "/log/j-logger.log",
+  "textFormat": ["Bold", "Underline"],
+  "stylizedMode": true
+}
+```
+
+### Available methods
+- getLogTypes() => get all available middleware log formats
+- TextColors() => available text colors
+- BgColors() => available background colors
+- BrightColors() => available bright text colors
+- FormattingOptions() => available text formatting options
+
+### Available Properties
+- SavePath(path_string)
+- TextColor(color_string)
+- BackgroundColor(color_string)
+- TextFormat(formats_string_array)
+- SaveLog(boolean) >>> This takes j-logger.log as default path if not configured.
+
 ### Usage
 ```javascript
 // Import the JLogger class and other required modules
@@ -35,20 +63,6 @@ app.use(requestLogger("REQUEST"));
 // Log types
 const logTypes = JLogger.getLogTypes();
 console.log("Available log types:", logTypes);
-```
-
-### Configuration
-The logger can be configured using a JSON file(Optional). Fields are also optionals. Create a j-logger.config.json file with the following structure:
-
-```json
-{
-  "color": "White",
-  "backgroundColor": "Black",
-  "saveLog": true,
-  "logPath": "/log/j-logger.log",
-  "textFormat": ["Bold", "Underline"],
-  "stylizedMode": true
-}
 ```
 
 ### Middleware Usage
