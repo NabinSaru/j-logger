@@ -4,8 +4,8 @@ A custom logger utility for Node.js with configurable styles and features.
 ### Installation
 ```bash
 # Clone the repository
-git clone <repository_url>
-cd <repository_directory>
+git clone git@github.com:NabinSaru/j-logger.git
+cd J-LOGGER
 
 # Install dependencies
 npm install
@@ -14,7 +14,7 @@ npm install
 ### Usage
 ```javascript
 // Import the JLogger class and other required modules
-import { JLogger, requestLogger } from "./path/to/logger";
+import { JLogger, requestLogger } from "j-logger";
 
 // Set custom log styles
 JLogger.TextColor = "White";
