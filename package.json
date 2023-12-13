@@ -1,5 +1,5 @@
 {
-  "name": "j-logger",
+  "name": "@nabinsaru/j-logger",
   "version": "1.0.0",
   "description": "Library to customize the console logs.",
   "main": "lib/index.js",
