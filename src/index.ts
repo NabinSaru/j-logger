@@ -28,7 +28,7 @@ export class JLogger {
   static backgroundColor: string = "";
   static saveLog: boolean = false;
   static logPath: string = "";
-  static textFormat: string[] = [];
+  static textFormat:string = "";
   static stylizedMode: boolean = false;
 
   // Setters
@@ -49,8 +49,13 @@ export class JLogger {
     JLogger.saveLog = flag;
   }
 
-  static set TextFormat(format: string[]) {
-    JLogger.textFormat = format;
+  static set TextFormat(options: string[]) {
+    const textFormats = [];
+    for (const option of options) {
+      textFormats.push(formattingOptions[option]);
+    }
+    console.log(textFormats)
+    JLogger.textFormat = textFormats.join('');
   }
 
   static set StylizedMode(flag: boolean) {
@@ -82,14 +87,13 @@ export class JLogger {
     return formattedMessage;
   }
 
-  // TODO: take default style
   static log(msg: string) {
     if (JLogger.saveLog) {
       writeLog(JLogger.logPath, msg);
     }
 
     console.log(
-      `${JLogger.backgroundColor}${JLogger.color}${msg}${formattingOptions.Reset}`
+      `${JLogger.backgroundColor}${JLogger.color}${JLogger.textFormat}${msg}${formattingOptions.Reset}`
     );
   }
 
