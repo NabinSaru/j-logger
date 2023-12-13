@@ -105,7 +105,7 @@ export class JLogger {
 
     if (JLogger.stylizedMode) {
       console.log(
-        `${backgroundColors.Green}${brightColors.Black}[${LogLevel.INFO}]${
+        `${backgroundColors.Green}${textColors.Black}[${LogLevel.INFO}]${
           formattingOptions.Reset
         }${brightColors.Green} [${currentTime()}] ${msg}${
           formattingOptions.Reset
@@ -126,7 +126,7 @@ export class JLogger {
 
     if (JLogger.stylizedMode) {
       console.log(
-        `${backgroundColors.Red}${brightColors.White}[${LogLevel.ERROR}]${
+        `${backgroundColors.Red}${textColors.White}[${LogLevel.ERROR}]${
           formattingOptions.Reset
         }${brightColors.Red} [${currentTime()}] ${msg}${
           formattingOptions.Reset
@@ -147,7 +147,7 @@ export class JLogger {
 
     if (JLogger.stylizedMode) {
       console.log(
-        `${backgroundColors.Yellow}${brightColors.Black}[${LogLevel.WARN}]${
+        `${backgroundColors.Yellow}${textColors.Black}[${LogLevel.WARN}]${
           formattingOptions.Reset
         }${brightColors.Yellow} [${currentTime()}] ${msg}${
           formattingOptions.Reset
