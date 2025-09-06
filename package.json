@@ -1,27 +1,50 @@
 {
   "name": "@nabinsaru/j-logger",
-  "version": "1.0.1",
-  "description": "Library to customize the console logs.",
+  "version": "2.0.0",
+  "description": "Lightweight, customizable console logger with structured output and zero external dependencies.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./lib/index.js",
+      "import": "./lib/index.js",
+      "types": "./lib/index.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc",
-    "start:dev": "node lib",
+    "start:dev": "tsc && node lib/index.js",
     "test": "npm run test:build && node tests/index.js",
     "test:build": "npm run prepare && npm link && cd tests && npm link @nabinsaru/j-logger && cd ..",
     "prepare": "npm run build"
   },
   "keywords": [
     "logger",
-    "console log colors",
-    "colorify",
-    "debug"
+    "console",
+    "color",
+    "debug",
+    "typescript",
+    "structured-logging",
+    "terminal",
+    "ansi"
   ],
   "author": "Jenex <jenexthegreat@gmail.com>",
   "license": "ISC",
-  "devDependencies": {
-    "typescript": "^4.3.5",
-    "@types/node": "^16.10.1"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NabinSaru/j-logger.git"
   },
-  "files": ["lib/**/*"]
+  "bugs": {
+    "url": "https://github.com/NabinSaru/j-logger/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@types/node": "^20.5.1"
+  },
+  "files": [
+    "lib/**/*"
+  ]
 }
